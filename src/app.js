@@ -1,4 +1,12 @@
 import linebot from 'linebot';
+import fs from 'fs';
+import searchClothes from './emotibot';
+import searchItems from './yahooAPI';
+import faceAPI from './faceAPI';
+import express from 'express';
+const app = express();
+
+app.use('/upload', express.static('upload'))
 
 const bot = linebot({
 	channelId: 1483028111,
@@ -6,6 +14,7 @@ const bot = linebot({
 	channelAccessToken: '0WOs0qRcuUwRkuyiHdyF64/xMXztUDv+3Oi+i4KFucUtMa47kEf/+s3WiBoj5CfaBzlEeWvBZ3jARKyRPG2qB8Bv0QCoSl7XsxV1r3VASpl68Oe4vbii2pbBxjsYt78HyXCQn+gtncKIpkCEvkqzFQdB04t89/1O/w1cDnyilFU=',
 	verify: true // default=true
 });
+const linebotParser = bot.parser();
 
 bot.on('message', (event) => {
 	switch (event.message.type) {
@@ -68,7 +77,7 @@ bot.on('message', (event) => {
 					break;
 				default:
 					event.reply(event.message.text).then(function (data) {
-						console.log('Success', data);
+						console.log('Success', event.source.userId, event.message.text);
 					}).catch(function (error) {
 						console.log('Error', error);
 					});
@@ -76,22 +85,38 @@ bot.on('message', (event) => {
 			}
 			break;
 		case 'image':
-			event.message.content().then(function (data) {
-				const s = data.toString('base64').substring(0, 30);
-				return event.reply('Nice picture! ' + s);
-			}).catch(function (err) {
-				return event.reply(err.toString());
-			});
-			break;
-		case 'video':
-			event.reply('Nice movie!');
-			break;
-		case 'audio':
-			event.reply('Nice song!');
-			break;
-		case 'location':
-			event.reply(['That\'s a good location!', 'Lat:' + event.message.latitude, 'Long:' + event.message.longitude]);
-			break;
+			event.message.content().then((data) => {
+				fs.writeFile('upload/' + event.source.userId + '.jpg', data, function(err) {
+                    if (err) console.error(err);
+                    console.log("圖片上傳成功");
+                });
+						})
+						.then(()=>{
+							searchClothes('upload/' + event.source.userId + '.jpg')
+							.then(json => {
+								faceAPI('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg')
+								.then(face => {
+									console.log(face)
+									return face;
+								})
+								.then(face => {
+								let clothes = '';
+								json.data.forEach(type => (
+									clothes += " " + type
+								));
+								if (json.return == 0) {
+									event.reply('你身上穿了' + clothes);
+								} else {
+									event.reply('無法辨識請重新上傳照片');
+								};
+							});
+								return face;
+							})
+						})
+						.catch(function(err) {
+                return event.reply(err.toString());
+            });
+            break;
 		case 'sticker':
 			event.reply({
 				type: 'sticker',
@@ -129,6 +154,5 @@ bot.on('beacon', function (event) {
 	event.reply('beacon: ' + event.beacon.hwid);
 });
 
-bot.listen('/linewebhook', process.env.PORT || 3000, function () {
-	console.log('LineBot is running.');
-});
+app.post('/linewebhook', linebotParser);
+app.listen(3000);

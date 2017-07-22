@@ -12,8 +12,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var key = '68da1b8e09b6453bb8d81f100ae0984f';
 
-var faceAPI = function faceAPI(image) {
-	return (0, _nodeFetch2.default)('https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,emotion', {
+var faceAPI = async function faceAPI(image) {
+	(0, _nodeFetch2.default)('https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,emotion', {
 		method: 'post',
 		headers: {
 			'Content-Type': 'application/json',
@@ -23,27 +23,13 @@ var faceAPI = function faceAPI(image) {
 			'url': image
 		})
 	}).then(function (res) {
-		return res.json();
-	}).then(function (json) {
-		if (json.length == 0) {
-			return {
-				people: 0
-			};
-		} else if (json.length == 1) {
-			return json.map(function (data) {
-				return {
-					people: 1,
-					gender: data.faceAttributes.gender,
-					age: data.faceAttributes.age,
-					emotion: data.faceAttributes.emotion
-				};
-			});
+		if (res.status == 200) {
+			return res.json();
 		} else {
-			return {
-				people: 2
-			};
+			return 'error';
 		}
-		console.log(json);
+	}).then(function (face) {
+		return face;
 	}).catch(function (err) {
 		console.log(err);
 	});

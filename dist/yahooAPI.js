@@ -10,7 +10,7 @@ var _nodeFetch2 = _interopRequireDefault(_nodeFetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var searchItems = function searchItems(q) {
+var searchItems = async function searchItems(q) {
 	var category = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
 	var bidCategoryId = void 0,
