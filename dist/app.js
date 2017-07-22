@@ -75,31 +75,147 @@ bot.on('message', function (event) {
 				case 'Confirm':
 					event.reply({
 						type: 'template',
-						altText: 'this is a confirm template',
+						altText: 'this is a carousel template',
 						template: {
-							type: 'confirm',
-							text: 'Are you sure?',
-							actions: [{
-								type: 'message',
-								label: 'Yes',
-								text: 'yes'
+							type: 'carousel',
+							columns: [{
+								thumbnailImageUrl: 'https://example.com/bot/images/item1.jpg',
+								title: 'this is menu',
+								text: 'description',
+								actions: [{
+									type: 'postback',
+									label: 'Buy',
+									data: 'action=buy&itemid=111'
+								}, {
+									type: 'postback',
+									label: 'Add to cart',
+									data: 'action=add&itemid=111'
+								}, {
+									type: 'uri',
+									label: 'View detail',
+									uri: 'http://example.com/page/111'
+								}]
 							}, {
-								type: 'message',
-								label: 'No',
-								text: 'no'
+								thumbnailImageUrl: 'https://example.com/bot/images/item2.jpg',
+								title: 'this is menu',
+								text: 'description',
+								actions: [{
+									type: 'postback',
+									label: 'Buy',
+									data: 'action=buy&itemid=222'
+								}, {
+									type: 'postback',
+									label: 'Add to cart',
+									data: 'action=add&itemid=222'
+								}, {
+									type: 'uri',
+									label: 'View detail',
+									uri: 'http://example.com/page/222'
+								}]
 							}]
 						}
 					});
 					break;
 				case 'Multiple':
-					return event.reply(['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']);
+					var ob = {
+						type: 'template',
+						altText: 'this is a carousel template',
+						template: {
+							type: 'carousel',
+							columns: [{
+								thumbnailImageUrl: 'https://example.com/bot/images/item1.jpg',
+								title: 'this is menu',
+								text: 'description',
+								actions: [{
+									type: 'postback',
+									label: 'Buy',
+									data: 'action=buy&itemid=111'
+								}, {
+									type: 'postback',
+									label: 'Add to cart',
+									data: 'action=add&itemid=111'
+								}, {
+									type: 'uri',
+									label: 'View detail',
+									uri: 'http://example.com/page/111'
+								}]
+							}, {
+								thumbnailImageUrl: 'https://example.com/bot/images/item2.jpg',
+								title: 'this is menu',
+								text: 'description',
+								actions: [{
+									type: 'postback',
+									label: 'Buy',
+									data: 'action=buy&itemid=222'
+								}, {
+									type: 'postback',
+									label: 'Add to cart',
+									data: 'action=add&itemid=222'
+								}, {
+									type: 'uri',
+									label: 'View detail',
+									uri: 'http://example.com/page/222'
+								}]
+							}]
+						}
+					};
+					return event.reply([ob]);
 					break;
 				case 'Version':
 					event.reply('linebot@' + require('../package.json').version);
 					break;
 				case 'test':
-					(0, _yahooAPI2.default)('上衣', 'male').then(function (item) {
-						console.log('item', item);
+					(0, _yahooAPI2.default)('上衣', 'male').then(function (items) {
+						var title1 = items[0].title;
+						var price = '\u5546\u54C1\u50F9\u683C\uFF1A' + items[0].price + '\u5143';
+						var data1 = items[0].imageUrl;
+						var data2 = items[0].url;
+						var label1 = '\u8CE3\u5BB6\u8CC7\u8A0A\uFF1A' + items[0].seller.title + '(' + items[0].seller.rating + ')';
+						var data3 = items[0].seller.url;
+						var ob = {
+							type: 'template',
+							altText: 'this is a carousel template',
+							template: {
+								type: 'carousel',
+								columns: [{
+									thumbnailImageUrl: items[0].imageUrl,
+									title: title1.substring(0, 20),
+									text: '\u5546\u54C1\u50F9\u683C\uFF1A' + items[0].price + '\u5143',
+									actions: [{
+										type: 'uri',
+										label: '查看圖片',
+										uri: items[0].imageUrl
+									}, {
+										type: 'postback',
+										label: 'Add to cart',
+										data: 'action=add&itemid=111'
+									}, {
+										type: 'uri',
+										label: 'View detail',
+										uri: 'http://example.com/page/111'
+									}]
+								}, {
+									thumbnailImageUrl: items[1].imageUrl,
+									title: '123123',
+									text: '\u5546\u54C1\u50F9\u683C\uFF1A' + items[1].price + '\u5143',
+									actions: [{
+										type: 'postback',
+										label: 'Buy',
+										data: 'action=buy&itemid=222'
+									}, {
+										type: 'postback',
+										label: 'Add to cart',
+										data: 'action=add&itemid=222'
+									}, {
+										type: 'uri',
+										label: 'View detail',
+										uri: 'http://example.com/page/222'
+									}]
+								}]
+							}
+						};
+						event.reply(itemCard2(event, items));
+						return items;
 					});
 					break;
 				default:
@@ -157,67 +273,7 @@ bot.on('leave', function (event) {
 	event.reply('leave: ' + event.source.groupId);
 });
 
-bot.on('postback', function (event) {
-	var recommendNum = 10;
-	var data = [];
-	for (var i = 0; i < recommendNum; i++) {
-		var num = Math.floor(Math.random() * items.length);
-		var repeat = false;
-		for (var j = 0; j < data.length; j++) {
-			if (data[j] == num) {
-				repeat = true;
-				break;
-			}
-		}
-
-		if (!repeat) {
-			data.push(num);
-		}
-	}
-
-	var _loop = function _loop(_i) {
-
-		var columnsData = [];
-
-		for (var _j = _i * 5; _j < _i * 5 + 5; _j++) {
-			columnsData.push({
-				'thumbnailImageUrl': items[data[_j]].imageUrl,
-				'title': items[data[_j]].title,
-				'text': '商品價格：' + items[data[_j]].price + '元',
-				'actions': [{
-					'type': 'uri',
-					'label': '查看圖片',
-					'data': items[data[_j]].imageUrl
-				}, {
-					'type': 'uri',
-					'label': '購買網頁',
-					'data': items[data[_j]].url
-				}, {
-					'type': 'uri',
-					'label': '賣家資訊：' + items[data[_j]].seller.title + '(' + items[data[_j]].seller.rating + ')',
-					'data': items[data[_j]].seller.url
-				}]
-			});
-		}
-
-		var confirmData = {
-			'type': 'template',
-			'altText': 'this is a carousel template',
-			'template': {
-				'type': 'carousel',
-				'columns': columnsData
-			}
-		};
-
-		event.source.profile().then(function (profile) {
-			event.push(profile.userId, confirmData);
-		});
-	};
-
-	for (var _i = 0; _i < data.length / 5; _i++) {
-		_loop(_i);
-	}
-});
+bot.on('postback', function (event) {});
 
 bot.on('beacon', function (event) {
 	event.reply('beacon: ' + event.beacon.hwid);
@@ -225,3 +281,44 @@ bot.on('beacon', function (event) {
 
 app.post('/linewebhook', linebotParser);
 app.listen(3000);
+
+var itemCard2 = function itemCard2(event, items) {
+	var columnsData = [];
+	var confirmData = [];
+	for (var i = 0; i < 5; i++) {
+		var image = items[i].imageUrl;
+		var title1 = items[i].title.substring(0, 20);
+		var price = '\u5546\u54C1\u50F9\u683C\uFF1A' + items[i].price + '\u5143';
+		var data1 = items[i].imageUrl;
+		var data2 = items[i].url;
+		var label1 = '\u8CE3\u5BB6\u8CC7\u8A0A\uFF1A' + items[i].seller.title + '(' + items[i].seller.rating + ')';
+		var data3 = items[i].seller.url;
+		columnsData.push({
+			thumbnailImageUrl: image,
+			title: title1,
+			text: price,
+			actions: [{
+				type: 'uri',
+				label: '查看圖片',
+				uri: data1
+			}, {
+				type: 'uri',
+				label: '購買網頁',
+				uri: data2
+			}, {
+				type: 'uri',
+				label: label1.substring(0, 20),
+				uri: data3
+			}]
+		});
+	};
+	confirmData.push({
+		type: 'template',
+		altText: '商品資訊',
+		template: {
+			type: 'carousel',
+			columns: columnsData
+		}
+	});
+	return confirmData;
+};

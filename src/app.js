@@ -53,31 +53,99 @@ bot.on('message', (event) => {
 				case 'Confirm':
 					event.reply({
 						type: 'template',
-						altText: 'this is a confirm template',
+						altText: 'this is a carousel template',
 						template: {
-							type: 'confirm',
-							text: 'Are you sure?',
-							actions: [{
-								type: 'message',
-								label: 'Yes',
-								text: 'yes'
+							type: 'carousel',
+							columns: [{
+								thumbnailImageUrl: 'https://example.com/bot/images/item1.jpg',
+								title: 'this is menu',
+								text: 'description',
+								actions: [{
+									type: 'postback',
+									label: 'Buy',
+									data: 'action=buy&itemid=111'
+								}, {
+									type: 'postback',
+									label: 'Add to cart',
+									data: 'action=add&itemid=111'
+								}, {
+									type: 'uri',
+									label: 'View detail',
+									uri: 'http://example.com/page/111'
+								}]
 							}, {
-								type: 'message',
-								label: 'No',
-								text: 'no'
+								thumbnailImageUrl: 'https://example.com/bot/images/item2.jpg',
+								title: 'this is menu',
+								text: 'description',
+								actions: [{
+									type: 'postback',
+									label: 'Buy',
+									data: 'action=buy&itemid=222'
+								}, {
+									type: 'postback',
+									label: 'Add to cart',
+									data: 'action=add&itemid=222'
+								}, {
+									type: 'uri',
+									label: 'View detail',
+									uri: 'http://example.com/page/222'
+								}]
 							}]
 						}
 					});
 					break;
 				case 'Multiple':
-					return event.reply(['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']);
+					let ob = {
+						type: 'template',
+						altText: 'this is a carousel template',
+						template: {
+							type: 'carousel',
+							columns: [{
+								thumbnailImageUrl: 'https://example.com/bot/images/item1.jpg',
+								title: 'this is menu',
+								text: 'description',
+								actions: [{
+									type: 'postback',
+									label: 'Buy',
+									data: 'action=buy&itemid=111'
+								}, {
+									type: 'postback',
+									label: 'Add to cart',
+									data: 'action=add&itemid=111'
+								}, {
+									type: 'uri',
+									label: 'View detail',
+									uri: 'http://example.com/page/111'
+								}]
+							}, {
+								thumbnailImageUrl: 'https://example.com/bot/images/item2.jpg',
+								title: 'this is menu',
+								text: 'description',
+								actions: [{
+									type: 'postback',
+									label: 'Buy',
+									data: 'action=buy&itemid=222'
+								}, {
+									type: 'postback',
+									label: 'Add to cart',
+									data: 'action=add&itemid=222'
+								}, {
+									type: 'uri',
+									label: 'View detail',
+									uri: 'http://example.com/page/222'
+								}]
+							}]
+						}
+					};
+					return event.reply([ob]);
 					break;
 				case 'Version':
 					event.reply('linebot@' + require('../package.json').version);
 					break;
 				case 'test':
-					searchItems('上衣', 'male').then((item)=>{
-						console.log('item', item);
+					searchItems('上衣', 'male').then((items) => {	
+						event.reply(itemCard2(event, items));
+						return items;
 					})
 					break;
 				default:
@@ -136,64 +204,6 @@ bot.on('leave', function (event) {
 });
 
 bot.on('postback', function (event) {
-	let recommendNum = 10;
-	let data = [];
-	for(let i = 0 ; i < recommendNum ; i++){
-		let num = Math.floor(Math.random() * items.length);
-		let repeat = false;
-		for(let j = 0 ; j < data.length ; j++){
-			if(data[j] == num){
-				repeat = true;
-				break;
-			}
-		}
-
-		if(!repeat){
-			data.push(num);
-		}
-	}
-	for(let i = 0 ; i < data.length/5 ; i++){
-
-		let columnsData = [];
-
-		for(let j = i*5 ; j < i*5+5 ; j++){
-			columnsData.push({
-				'thumbnailImageUrl': items[data[j]].imageUrl,
-				'title': items[data[j]].title,
-				'text': '商品價格：' + items[data[j]].price + '元',
-				'actions': [
-					{
-					    'type': 'uri',
-					    'label': '查看圖片',
-					    'data': items[data[j]].imageUrl
-					},
-					{
-					    'type': 'uri',
-					    'label': '購買網頁',
-					    'data': items[data[j]].url
-					},
-					{
-					    'type': 'uri',
-					    'label': '賣家資訊：' + items[data[j]].seller.title + '(' + items[data[j]].seller.rating + ')',
-					    'data': items[data[j]].seller.url
-					}
-				]
-			});
-		}
-
-		let confirmData = {
-			'type': 'template',
-			'altText': 'this is a carousel template',
-			'template': {
-				'type': 'carousel',
-				'columns': columnsData
-			}
-		};
-
-		event.source.profile().then(function (profile) {
-			event.push(profile.userId, confirmData);
-		});
-	}
 });
 
 bot.on('beacon', function (event) {
@@ -202,3 +212,44 @@ bot.on('beacon', function (event) {
 
 app.post('/linewebhook', linebotParser);
 app.listen(3000);
+
+const itemCard2 = (event, items) => {
+	let columnsData = [];
+	let confirmData = [];
+	for (let i = 0 ; i < 5 ; i++) {
+		let image = items[i].imageUrl;
+		let title1 = items[i].title.substring(0, 20);
+		let price = `商品價格：${items[i].price}元`;
+		let data1 = items[i].imageUrl;
+		let data2 = items[i].url;
+		let label1 = `賣家資訊：${items[i].seller.title}(${items[i].seller.rating})`;
+		let data3 = items[i].seller.url
+		columnsData.push({
+			thumbnailImageUrl: image,
+			title: title1,
+			text: price,
+			actions: [{
+				type: 'uri',
+				label: '查看圖片',
+				uri: data1
+			}, {
+				type: 'uri',
+				label: '購買網頁',
+				uri: data2
+			}, {
+				type: 'uri',
+				label: label1.substring(0, 20),
+				uri: data3
+			}]
+		}) 
+	};
+		confirmData.push({
+			type: 'template',
+			altText: '商品資訊',
+			template: {
+				type: 'carousel',
+				columns: columnsData
+			}
+		})
+	return confirmData;
+	}
