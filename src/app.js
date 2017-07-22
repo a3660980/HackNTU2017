@@ -75,6 +75,11 @@ bot.on('message', (event) => {
 				case 'Version':
 					event.reply('linebot@' + require('../package.json').version);
 					break;
+				case 'test':
+					searchItems('上衣', 'male').then((item)=>{
+						console.log('item', item);
+					})
+					break;
 				default:
 					event.reply(event.message.text).then(function (data) {
 						console.log('Success', event.source.userId, event.message.text);
@@ -85,38 +90,22 @@ bot.on('message', (event) => {
 			}
 			break;
 		case 'image':
-			event.message.content().then((data) => {
-				fs.writeFile('upload/' + event.source.userId + '.jpg', data, function(err) {
-                    if (err) console.error(err);
-                    console.log("圖片上傳成功");
-                });
-						})
-						.then(()=>{
-							searchClothes('upload/' + event.source.userId + '.jpg')
-							.then(json => {
-								faceAPI('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg')
-								.then(face => {
-									console.log(face)
-									return face;
-								})
-								.then(face => {
-								let clothes = '';
-								json.data.forEach(type => (
-									clothes += " " + type
-								));
-								if (json.return == 0) {
-									event.reply('你身上穿了' + clothes);
-								} else {
-									event.reply('無法辨識請重新上傳照片');
-								};
-							});
-								return face;
-							})
-						})
-						.catch(function(err) {
-                return event.reply(err.toString());
-            });
-            break;
+			event.message.content().then(async (data) => {
+ 				await fs.writeFile('upload/' + event.source.userId + '.jpg', data, err => {
+					if (err) console.error(err);
+					console.log("圖片上傳成功");
+				});
+				let clothes = await searchClothes('upload/' + event.source.userId + '.jpg');
+				let face = await faceAPI('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg');
+				if (face.people ==1) {
+					if(clothes.return == 0 ) {
+						let item = await searchItems('上衣', 'male');
+						console.log('item', item);
+						event.reply(item);
+					}
+				}
+			});
+			break;
 		case 'sticker':
 			event.reply({
 				type: 'sticker',

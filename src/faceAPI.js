@@ -15,20 +15,18 @@ const faceAPI = async (image) => {
 	}).then((res) => {
 		return res.json();
 	}).then((json) => {
-		if(json.length == 0) {
+		if (json.length == 0) {
 			return {
 				people: 0
 			}
-		}else if(json.length == 1) {
-			return json.map(data => {
-				return {
+		}else if (json.length == 1) {
+			return {
 					people: 1,
-					gender: data.faceAttributes.gender,
-					age: data.faceAttributes.age,
-					emotion: data.faceAttributes.emotion
+					gender: json[0].faceAttributes.gender,
+					age: json[0].faceAttributes.age,
+					emotion: json[0].faceAttributes.emotion
 				}
-			});
-		}else{
+		} else {
 			return {
 				people: 2
 			}

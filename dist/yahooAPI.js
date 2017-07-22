@@ -10,7 +10,7 @@ var _nodeFetch2 = _interopRequireDefault(_nodeFetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var searchItems = async function searchItems(q) {
+var searchItems = function searchItems(q) {
 	var category = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
 	var bidCategoryId = void 0,
@@ -27,19 +27,20 @@ var searchItems = async function searchItems(q) {
 		case '':
 			return 'not search Category';
 			break;
-		case 'girl':
+		case 'female':
 			bidCategoryId = 'categoryId=23000';
 			bidCategoryLevel = 'categoryLevel=0';
 			break;
-		case 'boy':
+		case 'male':
 			bidCategoryId = 'categoryId=5299020';
 			bidCategoryLevel = 'categoryLevel=0';
 			break;
 	}
 	var searchQ = 'q=' + q;
 	return (0, _nodeFetch2.default)('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
-		method: 'get'
+		method: 'GET'
 	}).then(function (res) {
+		console.log(res);
 		return res.json();
 	}).then(function (json) {
 		return json.items.map(function (data) {
@@ -60,4 +61,7 @@ var searchItems = async function searchItems(q) {
 	});
 };
 
+searchItems('上衣', 'male').then(function (item) {
+	return console.log(item);
+});
 exports.default = searchItems;

@@ -97,6 +97,11 @@ bot.on('message', function (event) {
 				case 'Version':
 					event.reply('linebot@' + require('../package.json').version);
 					break;
+				case 'test':
+					(0, _yahooAPI2.default)('上衣', 'male').then(function (item) {
+						console.log('item', item);
+					});
+					break;
 				default:
 					event.reply(event.message.text).then(function (data) {
 						console.log('Success', event.source.userId, event.message.text);
@@ -107,31 +112,20 @@ bot.on('message', function (event) {
 			}
 			break;
 		case 'image':
-			event.message.content().then(function (data) {
-				_fs2.default.writeFile('upload/' + event.source.userId + '.jpg', data, function (err) {
+			event.message.content().then(async function (data) {
+				await _fs2.default.writeFile('upload/' + event.source.userId + '.jpg', data, function (err) {
 					if (err) console.error(err);
 					console.log("圖片上傳成功");
 				});
-			}).then(function () {
-				(0, _emotibot2.default)('upload/' + event.source.userId + '.jpg').then(function (json) {
-					(0, _faceAPI2.default)('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg').then(function (face) {
-						console.log(face);
-						return face;
-					}).then(function (face) {
-						var clothes = '';
-						json.data.forEach(function (type) {
-							return clothes += " " + type;
-						});
-						if (json.return == 0) {
-							event.reply('你身上穿了' + clothes);
-						} else {
-							event.reply('無法辨識請重新上傳照片');
-						};
-					});
-					return face;
-				});
-			}).catch(function (err) {
-				return event.reply(err.toString());
+				var clothes = await (0, _emotibot2.default)('upload/' + event.source.userId + '.jpg');
+				var face = await (0, _faceAPI2.default)('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg');
+				if (face.people == 1) {
+					if (clothes.return == 0) {
+						var item = await (0, _yahooAPI2.default)('上衣', 'male');
+						console.log('item', item);
+						event.reply(item);
+					}
+				}
 			});
 			break;
 		case 'sticker':

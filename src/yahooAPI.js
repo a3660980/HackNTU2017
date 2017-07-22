@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
-const searchItems = async (q, category='') => {
-	let bidCategoryId, bidCategoryLevel, mallCategoryId, mallCategoryLevel, buyCategoryId, buyCategoryLevel;
+const searchItems = (q, category = '') => {
+	let bidCategoryId, bidCategoryLevel;
 
 	if(q == '') {
 		return 'not search Keywords';
@@ -10,20 +10,21 @@ const searchItems = async (q, category='') => {
 		case '':
 			return 'not search Category';
 		break;
-		case 'girl':
+		case 'female':
 			bidCategoryId = 'categoryId=23000';
 			bidCategoryLevel = 'categoryLevel=0';
 		break;
-		case 'boy':
+		case 'male':
 			bidCategoryId = 'categoryId=5299020';
 			bidCategoryLevel = 'categoryLevel=0';
 		break;
 	}
 	let searchQ = 'q=' + q;
-	return fetch('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
-		method: 'get'
+	 return fetch('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
+		method: 'GET'
 	})
 	.then((res) => {
+		console.log(res)
 		return res.json();
 	})
 	.then(json => {
@@ -46,4 +47,7 @@ const searchItems = async (q, category='') => {
 	})
 }
 
+searchItems('上衣', 'male').then(item=>(
+	console.log(item)
+))
 export default searchItems;
