@@ -42,7 +42,7 @@ var searchItems = function searchItems(q) {
 	}).then(function (res) {
 		return res.json();
 	}).then(function (json) {
-		var searchData = json.items.map(function (data) {
+		return json.items.map(function (data) {
 			return {
 				title: data.title,
 				imageUrl: data.imageUrl,
@@ -55,21 +55,9 @@ var searchItems = function searchItems(q) {
 				}
 			};
 		});
-		return searchData;
 	}).catch(function (err) {
 		console.log(err);
 	});
 };
-/*
-category		bidCategoryId		bidCategoryLevel		mallCategoryId		mallCategoryLevel		buyCategoryId		buyCategoryLevel
-girl			23000				0						152981802			0						10					2
-boy				173525				0						152982021			0						31					2
-*/
 
-searchItems('衣', 'girl').then(function (items) {
-	console.log(items);
-});
-
-exports.default = {
-	searchItems: searchItems
-};
+exports.default = searchItems;

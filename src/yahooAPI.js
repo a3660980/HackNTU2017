@@ -27,7 +27,7 @@ const searchItems = (q, category='') => {
 		return res.json();
 	})
 	.then(json => {
-		let searchData = json.items.map(data => {
+		return json.items.map(data => {
 			return {
 				title: data.title,
 				imageUrl: data.imageUrl,
@@ -40,7 +40,6 @@ const searchItems = (q, category='') => {
 				}
 			};
 		});
-		return searchData;
 	})
 	.catch((err) => {
 		console.log(err);
