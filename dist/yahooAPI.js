@@ -10,7 +10,7 @@ var _nodeFetch2 = _interopRequireDefault(_nodeFetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var searchItems = function searchItems(q) {
+var searchItems = async function searchItems(q) {
 	var category = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
 	var bidCategoryId = void 0,
@@ -60,16 +60,5 @@ var searchItems = function searchItems(q) {
 		console.log(err);
 	});
 };
-/*
-category		bidCategoryId		bidCategoryLevel		mallCategoryId		mallCategoryLevel		buyCategoryId		buyCategoryLevel
-girl			23000				0						152981802			0						10					2
-boy				173525				0						152982021			0						31					2
-*/
 
-searchItems('衣', 'girl').then(function (items) {
-	console.log(items);
-});
-
-exports.default = {
-	searchItems: searchItems
-};
+exports.default = searchItems;

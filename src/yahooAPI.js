@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-const searchItems = (q, category='') => {
+const searchItems = async (q, category='') => {
 	let bidCategoryId, bidCategoryLevel, mallCategoryId, mallCategoryLevel, buyCategoryId, buyCategoryLevel;
 
 	if(q == '') {

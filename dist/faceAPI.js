@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var key = '68da1b8e09b6453bb8d81f100ae0984f';
 
-var faceAPI = function faceAPI() {
+var faceAPI = async function faceAPI(image) {
 	(0, _nodeFetch2.default)('https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,emotion', {
 		method: 'post',
 		headers: {
@@ -20,20 +20,19 @@ var faceAPI = function faceAPI() {
 			'Ocp-Apim-Subscription-Key': '68da1b8e09b6453bb8d81f100ae0984f'
 		},
 		body: JSON.stringify({
-			'url': 'http://fs.mis.kuas.edu.tw/~s1103137225/123.jpg'
+			'url': image
 		})
 	}).then(function (res) {
-		console.log(res.status);
-		return res.json();
-	}).then(function (json) {
-		console.log(json);
+		if (res.status == 200) {
+			return res.json();
+		} else {
+			return 'error';
+		}
+	}).then(function (face) {
+		return face;
 	}).catch(function (err) {
 		console.log(err);
 	});
 };
 
-faceAPI();
-
-exports.default = {
-	faceAPI: faceAPI
-};
+exports.default = faceAPI;

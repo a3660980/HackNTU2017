@@ -18,7 +18,7 @@ var _fs2 = _interopRequireDefault(_fs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var searchClothes = function searchClothes(file) {
+var searchClothes = async function searchClothes(file) {
   var clothesTypes = {
     bag: '包包',
     hat: '帽子',
@@ -42,14 +42,12 @@ var searchClothes = function searchClothes(file) {
   }).then(function (res) {
     return res.json();
   }).then(function (json) {
-    console.log(json);
     var newJson = {
       return: json.return,
       data: json.data.map(function (data) {
         return clothesTypes[data.type];
       })
     };
-    console.log('newJson', newJson);
     return newJson;
   }).catch(function (error) {
     return console.log(error);

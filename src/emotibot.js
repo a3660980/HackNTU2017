@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import fs from 'fs';
 
-const searchClothes = (file) => {
+const searchClothes = async (file) => {
   let clothesTypes = {
     bag: '包包',
     hat: '帽子', 
@@ -28,14 +28,12 @@ const searchClothes = (file) => {
     return res.json();
   })
   .then(json => {
-    console.log(json)
     let newJson = {
       return : json.return,
       data: json.data.map(data => {
         return clothesTypes[data.type];
       })
     } 
-    console.log('newJson', newJson)
     return newJson;
   })
   .catch(error => console.log(error));
