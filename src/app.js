@@ -1,4 +1,6 @@
 import linebot from 'linebot';
+import fs from 'fs';
+import searchClothes from './emotibot';
 
 const bot = linebot({
 	channelId: 1483028111,
@@ -66,6 +68,12 @@ bot.on('message', (event) => {
 				case 'Version':
 					event.reply('linebot@' + require('../package.json').version);
 					break;
+				case 'test':
+					searchClothes('../upload/U4f6864932194dd6187b5847d68b8abcc.jpg').then(
+						json => {
+							event.reply(json);
+						});
+						break;
 				default:
 					event.reply(event.message.text).then(function (data) {
 						console.log('Success', data);
@@ -77,12 +85,25 @@ bot.on('message', (event) => {
 			break;
 		case 'image':
 			event.message.content().then(function (data) {
-				const s = data.toString('base64').substring(0, 30);
-				return event.reply('Nice picture! ' + s);
-			}).catch(function (err) {
-				return event.reply(err.toString());
-			});
-			break;
+				fs.writeFile('upload/' + event.source.userId + '.jpg', data, function(err) {
+                    if (err) console.error(err);
+                    console.log("圖片上傳成功", data);
+                });
+						})
+						.then(()=>{
+							searchClothes('upload/' + event.source.userId + '.jpg').then(json => {
+								let clothes = '';
+								json.forEach(type => (
+									clothes += " " + type
+								));
+								
+								event.reply('你身上穿了' + clothes);
+							});
+						})
+						.catch(function(err) {
+                return event.reply(err.toString());
+            });
+            break;
 		case 'video':
 			event.reply('Nice movie!');
 			break;

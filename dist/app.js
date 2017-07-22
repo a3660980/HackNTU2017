@@ -4,6 +4,14 @@ var _linebot = require('linebot');
 
 var _linebot2 = _interopRequireDefault(_linebot);
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _emotibot = require('./emotibot');
+
+var _emotibot2 = _interopRequireDefault(_emotibot);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var bot = (0, _linebot2.default)({
@@ -72,6 +80,11 @@ bot.on('message', function (event) {
 				case 'Version':
 					event.reply('linebot@' + require('../package.json').version);
 					break;
+				case 'test':
+					(0, _emotibot2.default)('../upload/U4f6864932194dd6187b5847d68b8abcc.jpg').then(function (json) {
+						event.reply(json);
+					});
+					break;
 				default:
 					event.reply(event.message.text).then(function (data) {
 						console.log('Success', data);
@@ -83,8 +96,19 @@ bot.on('message', function (event) {
 			break;
 		case 'image':
 			event.message.content().then(function (data) {
-				var s = data.toString('base64').substring(0, 30);
-				return event.reply('Nice picture! ' + s);
+				_fs2.default.writeFile('upload/' + event.source.userId + '.jpg', data, function (err) {
+					if (err) console.error(err);
+					console.log("圖片上傳成功", data);
+				});
+			}).then(function () {
+				(0, _emotibot2.default)('upload/' + event.source.userId + '.jpg').then(function (json) {
+					var clothes = '';
+					json.forEach(function (type) {
+						return clothes += " " + type;
+					});
+
+					event.reply('你身上穿了' + clothes);
+				});
 			}).catch(function (err) {
 				return event.reply(err.toString());
 			});

@@ -18,7 +18,10 @@
   },
   "homepage": "https://github.com/a3660980/HackNTU2017#readme",
   "dependencies": {
-    "linebot": "git+https://github.com/boybundit/linebot.git"
+    "form-data": "^2.2.0",
+    "fs": "^0.0.1-security",
+    "linebot": "git+https://github.com/boybundit/linebot.git",
+    "node-fetch": "^1.7.1"
   },
   "devDependencies": {
     "babel": "^6.23.0",
