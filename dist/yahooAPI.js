@@ -37,12 +37,14 @@ var searchItems = function searchItems(q) {
 			break;
 	}
 	var searchQ = 'q=' + q;
+
 	return (0, _nodeFetch2.default)('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
 		method: 'GET'
 	}).then(function (res) {
 		console.log(res);
 		return res.json();
 	}).then(function (json) {
+		console.log(json);
 		return json.items.map(function (data) {
 			return {
 				title: data.title,

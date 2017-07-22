@@ -20,14 +20,16 @@ const searchItems = (q, category = '') => {
 		break;
 	}
 	let searchQ = 'q=' + q;
-	 return fetch('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
-		method: 'GET'
+
+	return fetch('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
+		method: 'get'
 	})
 	.then((res) => {
 		console.log(res)
 		return res.json();
 	})
 	.then(json => {
+		console.log(json);
 		return json.items.map(data => {
 			return {
 				title: data.title,
