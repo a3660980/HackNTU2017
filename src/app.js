@@ -168,8 +168,7 @@ bot.on('message', (event) => {
 				if (face.people ==1) {
 					if(clothes.return == 0 ) {
 						let item = await searchItems(clothes.data[0], face.gender);
-						console.log('item', item);
-						event.reply(item);
+						event.reply(itemCard2(event, items));
 					}
 				}
 			});
