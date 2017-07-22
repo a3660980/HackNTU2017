@@ -19,6 +19,18 @@ var _fs2 = _interopRequireDefault(_fs);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var searchClothes = function searchClothes(file) {
+  var clothesTypes = {
+    bag: '包包',
+    hat: '帽子',
+    shoes: '鞋子',
+    dress: '洋裝',
+    skirt: '裙子',
+    pants: '長褲',
+    shorts: '短褲',
+    tops: '上衣',
+    suit: '西裝',
+    outerwear: '外套'
+  };
   var form = new _formData2.default();
   form.append('cmd', 'getClothes');
   form.append('appid', 'fec3fdbbda9ceee74e91c1c9f3f77e92');
@@ -30,9 +42,13 @@ var searchClothes = function searchClothes(file) {
   }).then(function (res) {
     return res.json();
   }).then(function (json) {
-    var newJson = json.data.map(function (data) {
-      return data.type;
-    });
+    console.log(json);
+    var newJson = {
+      return: json.return,
+      data: json.data.map(function (data) {
+        return clothesTypes[data.type];
+      })
+    };
     console.log('newJson', newJson);
     return newJson;
   }).catch(function (error) {

@@ -3,6 +3,18 @@ import FormData from 'form-data';
 import fs from 'fs';
 
 const searchClothes = (file) => {
+  let clothesTypes = {
+    bag: '包包',
+    hat: '帽子', 
+    shoes: '鞋子',
+    dress: '洋裝',
+    skirt: '裙子',
+    pants: '長褲',
+    shorts: '短褲',
+    tops: '上衣',
+    suit: '西裝',
+    outerwear: '外套'
+  };
   let form = new FormData();
   form.append('cmd', 'getClothes');
   form.append('appid', 'fec3fdbbda9ceee74e91c1c9f3f77e92');
@@ -11,12 +23,18 @@ const searchClothes = (file) => {
   return fetch('http://idc.emotibot.com/api/ApiKey/openapi_tw.php', {
     method: 'POST',
     body: form
-  }).then(res => {
+  })
+  .then(res => {
     return res.json();
-  }).then(json => {
-    let newJson = json.data.map(data => {
-      return data.type;
-    })
+  })
+  .then(json => {
+    console.log(json)
+    let newJson = {
+      return : json.return,
+      data: json.data.map(data => {
+        return clothesTypes[data.type];
+      })
+    } 
     console.log('newJson', newJson)
     return newJson;
   })

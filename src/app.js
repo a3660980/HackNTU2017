@@ -68,15 +68,9 @@ bot.on('message', (event) => {
 				case 'Version':
 					event.reply('linebot@' + require('../package.json').version);
 					break;
-				case 'test':
-					searchClothes('../upload/U4f6864932194dd6187b5847d68b8abcc.jpg').then(
-						json => {
-							event.reply(json);
-						});
-						break;
 				default:
 					event.reply(event.message.text).then(function (data) {
-						console.log('Success', data);
+						console.log('Success', event.source.userId, event.message.text);
 					}).catch(function (error) {
 						console.log('Error', error);
 					});
@@ -91,28 +85,23 @@ bot.on('message', (event) => {
                 });
 						})
 						.then(()=>{
-							searchClothes('upload/' + event.source.userId + '.jpg').then(json => {
+							searchClothes('upload/' + event.source.userId + '.jpg')
+							.then(json => {
 								let clothes = '';
-								json.forEach(type => (
+								json.data.forEach(type => (
 									clothes += " " + type
 								));
-								
-								event.reply('你身上穿了' + clothes);
+								if (json.return == 0) {
+									event.reply('你身上穿了' + clothes);
+								} else {
+									event.reply('無法辨識請重新上傳照片');
+								};
 							});
 						})
 						.catch(function(err) {
                 return event.reply(err.toString());
             });
             break;
-		case 'video':
-			event.reply('Nice movie!');
-			break;
-		case 'audio':
-			event.reply('Nice song!');
-			break;
-		case 'location':
-			event.reply(['That\'s a good location!', 'Lat:' + event.message.latitude, 'Long:' + event.message.longitude]);
-			break;
 		case 'sticker':
 			event.reply({
 				type: 'sticker',
