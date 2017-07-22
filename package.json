@@ -24,7 +24,8 @@
     "http-parser-js": "^0.4.5",
     "linebot": "git+https://github.com/boybundit/linebot.git",
     "node-fetch": "^1.7.1",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "urlencode": "^1.1.0"
   },
   "devDependencies": {
     "babel": "^6.23.0",

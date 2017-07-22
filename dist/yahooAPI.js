@@ -8,17 +8,17 @@ var _nodeFetch = require('node-fetch');
 
 var _nodeFetch2 = _interopRequireDefault(_nodeFetch);
 
+var _urlencode = require('urlencode');
+
+var _urlencode2 = _interopRequireDefault(_urlencode);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var searchItems = function searchItems(q) {
 	var category = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
 	var bidCategoryId = void 0,
-	    bidCategoryLevel = void 0,
-	    mallCategoryId = void 0,
-	    mallCategoryLevel = void 0,
-	    buyCategoryId = void 0,
-	    buyCategoryLevel = void 0;
+	    bidCategoryLevel = void 0;
 
 	if (q == '') {
 		return 'not search Keywords';
@@ -36,15 +36,13 @@ var searchItems = function searchItems(q) {
 			bidCategoryLevel = 'categoryLevel=0';
 			break;
 	}
-	var searchQ = 'q=' + q;
+	var searchQ = 'q=' + (0, _urlencode2.default)(q);
 
-	return (0, _nodeFetch2.default)('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
-		method: 'GET'
+	return (0, _nodeFetch2.default)('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&limit=20&sort=-sales&q=' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
+		method: 'get'
 	}).then(function (res) {
-		console.log(res);
 		return res.json();
 	}).then(function (json) {
-		console.log(json);
 		return json.items.map(function (data) {
 			return {
 				title: data.title,
@@ -63,7 +61,4 @@ var searchItems = function searchItems(q) {
 	});
 };
 
-searchItems('上衣', 'male').then(function (item) {
-	return console.log(item);
-});
 exports.default = searchItems;

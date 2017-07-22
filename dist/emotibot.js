@@ -18,7 +18,7 @@ var _fs2 = _interopRequireDefault(_fs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var searchClothes = async function searchClothes(file) {
+var searchClothes = function searchClothes(file) {
   var clothesTypes = {
     bag: '包包',
     hat: '帽子',

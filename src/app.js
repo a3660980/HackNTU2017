@@ -99,7 +99,7 @@ bot.on('message', (event) => {
 				let face = await faceAPI('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg');
 				if (face.people ==1) {
 					if(clothes.return == 0 ) {
-						let item = await searchItems('上衣', 'male');
+						let item = await searchItems(clothes.data[0], face.gender);
 						console.log('item', item);
 						event.reply(item);
 					}

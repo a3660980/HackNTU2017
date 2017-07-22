@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import urlencode from 'urlencode';
 
 const searchItems = (q, category = '') => {
 	let bidCategoryId, bidCategoryLevel;
@@ -19,17 +20,16 @@ const searchItems = (q, category = '') => {
 			bidCategoryLevel = 'categoryLevel=0';
 		break;
 	}
-	let searchQ = 'q=' + q;
+	let searchQ ='q=' + urlencode(q);
 
-	return fetch('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
+	
+	return fetch(`https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&limit=20&sort=-sales&q=${searchQ}&${bidCategoryId}&${bidCategoryLevel}`, {
 		method: 'get'
 	})
 	.then((res) => {
-		console.log(res)
 		return res.json();
 	})
 	.then(json => {
-		console.log(json);
 		return json.items.map(data => {
 			return {
 				title: data.title,
@@ -49,7 +49,4 @@ const searchItems = (q, category = '') => {
 	})
 }
 
-searchItems('上衣', 'male').then(item=>(
-	console.log(item)
-))
 export default searchItems;

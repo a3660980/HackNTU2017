@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import fs from 'fs';
 
-const searchClothes = async (file) => {
+const searchClothes = (file) => {
   let clothesTypes = {
     bag: '包包',
     hat: '帽子', 

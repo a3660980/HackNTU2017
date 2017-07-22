@@ -121,7 +121,7 @@ bot.on('message', function (event) {
 				var face = await (0, _faceAPI2.default)('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg');
 				if (face.people == 1) {
 					if (clothes.return == 0) {
-						var item = await (0, _yahooAPI2.default)('上衣', 'male');
+						var item = await (0, _yahooAPI2.default)(clothes.data[0], face.gender);
 						console.log('item', item);
 						event.reply(item);
 					}
@@ -158,7 +158,65 @@ bot.on('leave', function (event) {
 });
 
 bot.on('postback', function (event) {
-	event.reply('postback: ' + event.postback.data);
+	var recommendNum = 10;
+	var data = [];
+	for (var i = 0; i < recommendNum; i++) {
+		var num = Math.floor(Math.random() * items.length);
+		var repeat = false;
+		for (var j = 0; j < data.length; j++) {
+			if (data[j] == num) {
+				repeat = true;
+				break;
+			}
+		}
+
+		if (!repeat) {
+			data.push(num);
+		}
+	}
+
+	var _loop = function _loop(_i) {
+
+		var columnsData = [];
+
+		for (var _j = _i * 5; _j < _i * 5 + 5; _j++) {
+			columnsData.push({
+				'thumbnailImageUrl': items[data[_j]].imageUrl,
+				'title': items[data[_j]].title,
+				'text': '商品價格：' + items[data[_j]].price + '元',
+				'actions': [{
+					'type': 'uri',
+					'label': '查看圖片',
+					'data': items[data[_j]].imageUrl
+				}, {
+					'type': 'uri',
+					'label': '購買網頁',
+					'data': items[data[_j]].url
+				}, {
+					'type': 'uri',
+					'label': '賣家資訊：' + items[data[_j]].seller.title + '(' + items[data[_j]].seller.rating + ')',
+					'data': items[data[_j]].seller.url
+				}]
+			});
+		}
+
+		var confirmData = {
+			'type': 'template',
+			'altText': 'this is a carousel template',
+			'template': {
+				'type': 'carousel',
+				'columns': columnsData
+			}
+		};
+
+		event.source.profile().then(function (profile) {
+			event.push(profile.userId, confirmData);
+		});
+	};
+
+	for (var _i = 0; _i < data.length / 5; _i++) {
+		_loop(_i);
+	}
 });
 
 bot.on('beacon', function (event) {
