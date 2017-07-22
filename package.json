@@ -1,0 +1,29 @@
+{
+  "name": "hackntu2017",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "babel src -d dist && node dist/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a3660980/HackNTU2017.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/a3660980/HackNTU2017/issues"
+  },
+  "homepage": "https://github.com/a3660980/HackNTU2017#readme",
+  "dependencies": {
+    "linebot": "git+https://github.com/boybundit/linebot.git"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.25.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}
