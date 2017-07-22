@@ -42,7 +42,7 @@ var searchItems = async function searchItems(q) {
 	}).then(function (res) {
 		return res.json();
 	}).then(function (json) {
-		var searchData = json.items.map(function (data) {
+		return json.items.map(function (data) {
 			return {
 				title: data.title,
 				imageUrl: data.imageUrl,
@@ -55,7 +55,6 @@ var searchItems = async function searchItems(q) {
 				}
 			};
 		});
-		return searchData;
 	}).catch(function (err) {
 		console.log(err);
 	});

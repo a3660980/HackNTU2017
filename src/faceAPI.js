@@ -13,10 +13,25 @@ const faceAPI = async (image) => {
 	    	'url': image
 		})
 	}).then((res) => {
-		if(res.status == 200){
-			return res.json();
+		return res.json();
+	}).then((json) => {
+		if(json.length == 0) {
+			return {
+				people: 0
+			}
+		}else if(json.length == 1) {
+			return json.map(data => {
+				return {
+					people: 1,
+					gender: data.faceAttributes.gender,
+					age: data.faceAttributes.age,
+					emotion: data.faceAttributes.emotion
+				}
+			});
 		}else{
-			return 'error';
+			return {
+				people: 2
+			}
 		}
 	})
 	.then(face => {
