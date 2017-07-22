@@ -14,7 +14,7 @@ var _urlencode2 = _interopRequireDefault(_urlencode);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var searchItems = function searchItems(q) {
+var searchItems = async function searchItems(q) {
 	var category = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
 	var bidCategoryId = void 0,
@@ -38,7 +38,7 @@ var searchItems = function searchItems(q) {
 	}
 	var searchQ = 'q=' + (0, _urlencode2.default)(q);
 
-	return (0, _nodeFetch2.default)('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&limit=50&sort=-sales&q=' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
+	return (0, _nodeFetch2.default)('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&limit=5&sort=rel&q=' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
 		method: 'get'
 	}).then(function (res) {
 		return res.json();

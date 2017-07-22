@@ -24,6 +24,10 @@ var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
 
+var _md = require('md5');
+
+var _md2 = _interopRequireDefault(_md);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
@@ -165,56 +169,9 @@ bot.on('message', function (event) {
 					event.reply('linebot@' + require('../package.json').version);
 					break;
 				case 'test':
-					(0, _yahooAPI2.default)('上衣', 'male').then(function (items) {
-						var title1 = items[0].title;
-						var price = '\u5546\u54C1\u50F9\u683C\uFF1A' + items[0].price + '\u5143';
-						var data1 = items[0].imageUrl;
-						var data2 = items[0].url;
-						var label1 = '\u8CE3\u5BB6\u8CC7\u8A0A\uFF1A' + items[0].seller.title + '(' + items[0].seller.rating + ')';
-						var data3 = items[0].seller.url;
-						var ob = {
-							type: 'template',
-							altText: 'this is a carousel template',
-							template: {
-								type: 'carousel',
-								columns: [{
-									thumbnailImageUrl: items[0].imageUrl,
-									title: title1.substring(0, 20),
-									text: '\u5546\u54C1\u50F9\u683C\uFF1A' + items[0].price + '\u5143',
-									actions: [{
-										type: 'uri',
-										label: '查看圖片',
-										uri: items[0].imageUrl
-									}, {
-										type: 'postback',
-										label: 'Add to cart',
-										data: 'action=add&itemid=111'
-									}, {
-										type: 'uri',
-										label: 'View detail',
-										uri: 'http://example.com/page/111'
-									}]
-								}, {
-									thumbnailImageUrl: items[1].imageUrl,
-									title: '123123',
-									text: '\u5546\u54C1\u50F9\u683C\uFF1A' + items[1].price + '\u5143',
-									actions: [{
-										type: 'postback',
-										label: 'Buy',
-										data: 'action=buy&itemid=222'
-									}, {
-										type: 'postback',
-										label: 'Add to cart',
-										data: 'action=add&itemid=222'
-									}, {
-										type: 'uri',
-										label: 'View detail',
-										uri: 'http://example.com/page/222'
-									}]
-								}]
-							}
-						};
-						event.reply(itemCard2(event, items));
+					(0, _yahooAPI2.default)('鞋', 'male').then(async function (items) {
+						console.log(items);
+						event.reply((await itemCard2(event, items)));
 						return items;
 					});
 					break;
@@ -229,20 +186,38 @@ bot.on('message', function (event) {
 			break;
 		case 'image':
 			event.message.content().then(async function (data) {
-				await _fs2.default.writeFile('upload/' + event.source.userId + '.jpg', data, function (err) {
+				_fs2.default.writeFile('upload/' + (0, _md2.default)(data.toString('base64')) + '.jpg', data, function (err) {
 					if (err) console.error(err);
 					console.log("圖片上傳成功");
+					bot.push(event.source.userId, '資料讀取中...');
 				});
-				var clothes = await (0, _emotibot2.default)('upload/' + event.source.userId + '.jpg');
-				var face = await (0, _faceAPI2.default)('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg');
+				return data;
+			}).then(async function (data) {
+				var url = (0, _md2.default)(data.toString('base64'));
+				console.log('https://4f372a0b.ngrok.io/upload/' + url + '.jpg');
+				var face = await (0, _faceAPI2.default)('https://4f372a0b.ngrok.io/upload/' + url + '.jpg');
+				var clothes = await (0, _emotibot2.default)('upload/' + url + '.jpg');
+				console.log(face);
 				if (face.people == 1) {
 					if (clothes.return == 0) {
-						var item = await (0, _yahooAPI2.default)(clothes.data[0], face.gender);
-						console.log('item', item);
-						event.reply(item);
+						clothes.data.forEach(function (clothesType) {
+							(0, _yahooAPI2.default)(clothesType, face.gender).then(async function (items) {
+								console.log(clothesType);
+
+								var mes = await itemCard2(event, items);
+								console.log(mes);
+								bot.push(event.source.userId, mes);
+							});
+						});
+						event.reply('');
+					} else {
+						event.reply('請重新上傳更清楚的照片');
 					}
+				} else {
+					event.reply('照片不清楚或者人數不是1人');
 				}
 			});
+
 			break;
 		case 'sticker':
 			event.reply({
@@ -282,17 +257,17 @@ bot.on('beacon', function (event) {
 app.post('/linewebhook', linebotParser);
 app.listen(3000);
 
-var itemCard2 = function itemCard2(event, items) {
+var itemCard2 = async function itemCard2(event, items) {
 	var columnsData = [];
 	var confirmData = [];
-	for (var i = 0; i < 5; i++) {
-		var image = items[i].imageUrl;
-		var title1 = items[i].title.substring(0, 20);
-		var price = '\u5546\u54C1\u50F9\u683C\uFF1A' + items[i].price + '\u5143';
-		var data1 = items[i].imageUrl;
-		var data2 = items[i].url;
-		var label1 = '\u8CE3\u5BB6\u8CC7\u8A0A\uFF1A' + items[i].seller.title + '(' + items[i].seller.rating + ')';
-		var data3 = items[i].seller.url;
+	items.forEach(function (item) {
+		var image = item.imageUrl || '';
+		var title1 = item.title.substring(0, 20);
+		var price = '\u5546\u54C1\u50F9\u683C\uFF1A' + item.price + '\u5143\n\t\t\t\t\t\t\t\t \u8A55\u50F9\uFF1A' + item.seller.rating;
+		var data1 = item.imageUrl;
+		var data2 = item.url;
+		var label1 = '\u8CE3\u5BB6\u8CC7\u8A0A\uFF1A' + item.seller.title + '(' + item.seller.rating + ')';
+		var data3 = item.seller.url;
 		columnsData.push({
 			thumbnailImageUrl: image,
 			title: title1,
@@ -307,18 +282,18 @@ var itemCard2 = function itemCard2(event, items) {
 				uri: data2
 			}, {
 				type: 'uri',
-				label: label1.substring(0, 20),
+				label: '賣家資訊',
 				uri: data3
 			}]
 		});
-	};
-	confirmData.push({
+	});
+
+	return {
 		type: 'template',
 		altText: '商品資訊',
 		template: {
 			type: 'carousel',
 			columns: columnsData
 		}
-	});
-	return confirmData;
+	};
 };

@@ -4,9 +4,11 @@ import searchClothes from './emotibot';
 import searchItems from './yahooAPI';
 import faceAPI from './faceAPI';
 import express from 'express';
+import md5 from 'md5';
+
 const app = express();
 
-app.use('/upload', express.static('upload'))
+app.use('/upload', express.static('upload'));
 
 const bot = linebot({
 	channelId: 1483028111,
@@ -143,8 +145,9 @@ bot.on('message', (event) => {
 					event.reply('linebot@' + require('../package.json').version);
 					break;
 				case 'test':
-					searchItems('上衣', 'male').then((items) => {	
-						event.reply(itemCard2(event, items));
+					searchItems('鞋', 'male').then(async (items) => {	
+						console.log(items)
+						event.reply(await itemCard2(event, items));
 						return items;
 					})
 					break;
@@ -159,19 +162,39 @@ bot.on('message', (event) => {
 			break;
 		case 'image':
 			event.message.content().then(async (data) => {
- 				await fs.writeFile('upload/' + event.source.userId + '.jpg', data, err => {
+ 				fs.writeFile('upload/' + md5(data.toString('base64')) + '.jpg', data, err => {
 					if (err) console.error(err);
 					console.log("圖片上傳成功");
+					bot.push(event.source.userId , '資料讀取中...');
 				});
-				let clothes = await searchClothes('upload/' + event.source.userId + '.jpg');
-				let face = await faceAPI('https://d07a9e99.ngrok.io/upload/' + event.source.userId + '.jpg');
-				if (face.people ==1) {
+				return data;
+			}).then(async (data)=>{
+				let url = md5(data.toString('base64'));
+				console.log(`https://4f372a0b.ngrok.io/upload/${url}.jpg`)
+				let face = await faceAPI(`https://4f372a0b.ngrok.io/upload/${url}.jpg`);
+				let clothes = await searchClothes(`upload/${url}.jpg`);
+				console.log(face)
+				if (face.people == 1) {
 					if(clothes.return == 0 ) {
-						let item = await searchItems(clothes.data[0], face.gender);
-						event.reply(itemCard2(event, items));
+						clothes.data.forEach((clothesType) => {
+								searchItems(clothesType, face.gender).then(async (items) => {
+								console.log(clothesType)
+									
+									let mes = await itemCard2(event, items);
+									console.log(mes)
+									bot.push(event.source.userId , mes);
+								})
+						})
+						event.reply('');
+						
+					} else {
+						event.reply('請重新上傳更清楚的照片');
 					}
+				} else {
+					event.reply('照片不清楚或者人數不是1人');
 				}
-			});
+			})
+			
 			break;
 		case 'sticker':
 			event.reply({
@@ -212,17 +235,18 @@ bot.on('beacon', function (event) {
 app.post('/linewebhook', linebotParser);
 app.listen(3000);
 
-const itemCard2 = (event, items) => {
+const itemCard2 = async (event, items) => {
 	let columnsData = [];
 	let confirmData = [];
-	for (let i = 0 ; i < 5 ; i++) {
-		let image = items[i].imageUrl;
-		let title1 = items[i].title.substring(0, 20);
-		let price = `商品價格：${items[i].price}元`;
-		let data1 = items[i].imageUrl;
-		let data2 = items[i].url;
-		let label1 = `賣家資訊：${items[i].seller.title}(${items[i].seller.rating})`;
-		let data3 = items[i].seller.url
+	items.forEach(item => {
+		let image = item.imageUrl || '';
+		let title1 = item.title.substring(0, 20);
+		let price = `商品價格：${item.price}元
+								 評價：${item.seller.rating}`;
+		let data1 = item.imageUrl;
+		let data2 = item.url;
+		let label1 = `賣家資訊：${item.seller.title}(${item.seller.rating})`;
+		let data3 = item.seller.url
 		columnsData.push({
 			thumbnailImageUrl: image,
 			title: title1,
@@ -237,18 +261,18 @@ const itemCard2 = (event, items) => {
 				uri: data2
 			}, {
 				type: 'uri',
-				label: label1.substring(0, 20),
+				label: '賣家資訊',
 				uri: data3
 			}]
 		}) 
-	};
-		confirmData.push({
+	})
+
+	return {
 			type: 'template',
 			altText: '商品資訊',
 			template: {
 				type: 'carousel',
 				columns: columnsData
 			}
-		})
-	return confirmData;
+		};
 	}

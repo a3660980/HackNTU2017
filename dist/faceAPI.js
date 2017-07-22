@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var key = '68da1b8e09b6453bb8d81f100ae0984f';
 
-var faceAPI = function faceAPI(image) {
+var faceAPI = async function faceAPI(image) {
 	return (0, _nodeFetch2.default)('https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,emotion', {
 		method: 'post',
 		headers: {

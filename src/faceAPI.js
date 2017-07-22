@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 const key = '68da1b8e09b6453bb8d81f100ae0984f';
 
-const faceAPI = (image) => {
+const faceAPI =async (image) => {
 	return fetch('https://southeastasia.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,emotion', {
 		method: 'post',
 		headers: {
