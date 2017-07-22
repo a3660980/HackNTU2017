@@ -49,8 +49,4 @@ var faceAPI = function faceAPI(image) {
 	});
 };
 
-faceAPI('http://fs.mis.kuas.edu.tw/~s1103137225/123.jpg').then(function (data) {
-	console.log(data);
-});
-
 exports.default = faceAPI;

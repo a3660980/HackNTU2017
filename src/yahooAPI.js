@@ -20,6 +20,7 @@ const searchItems = (q, category='') => {
 		break;
 	}
 	let searchQ = 'q=' + q;
+
 	return fetch('https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&sort=-sales&' + searchQ + '&' + bidCategoryId + '&' + bidCategoryLevel, {
 		method: 'get'
 	})
@@ -27,6 +28,7 @@ const searchItems = (q, category='') => {
 		return res.json();
 	})
 	.then(json => {
+		console.log(json);
 		return json.items.map(data => {
 			return {
 				title: data.title,
@@ -45,5 +47,8 @@ const searchItems = (q, category='') => {
 		console.log(err);
 	})
 }
+
+searchItems("衣", "girl").then(data => {
+});
 
 export default searchItems;
