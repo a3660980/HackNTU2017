@@ -4,9 +4,9 @@ import fs from 'fs';
 
 const searchClothes = async (file) => {
   let clothesTypes = {
-    bag: '包包',
-    hat: '帽子', 
-    shoes: '鞋',
+    bag: '手提包',
+    hat: '草帽', 
+    shoes: '布鞋',
     dress: '洋裝',
     skirt: '裙子',
     pants: '長褲',

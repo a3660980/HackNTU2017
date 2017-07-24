@@ -46,18 +46,6 @@ bot.on('message', function (event) {
 	switch (event.message.type) {
 		case 'text':
 			switch (event.message.text) {
-				case 'Me':
-					event.source.profile().then(function (profile) {
-						return event.reply('Hello ' + profile.displayName + ' ' + profile.userId);
-					});
-					break;
-				case 'Picture':
-					event.reply({
-						type: 'image',
-						originalContentUrl: 'https://d.line-scdn.net/stf/line-lp/family/en-US/190X190_line_me.png',
-						previewImageUrl: 'https://d.line-scdn.net/stf/line-lp/family/en-US/190X190_line_me.png'
-					});
-					break;
 				case 'Location':
 					event.reply({
 						type: 'location',
@@ -68,102 +56,13 @@ bot.on('message', function (event) {
 					});
 					break;
 				case 'Push':
-					bot.push('U6350b7606935db981705282747c82ee1', ['Hey!', 'สวัสดี ' + String.fromCharCode(0xD83D, 0xDE01)]);
+					//bot.push('U6350b7606935db981705282747c82ee1', ['Hey!', 'สวัสดี ' + String.fromCharCode(0xD83D, 0xDE01)]);
 					break;
 				case 'Push2':
-					bot.push(['U6350b7606935db981705282747c82ee1', 'U6350b7606935db981705282747c82ee1'], ['Hey!', 'สวัสดี ' + String.fromCharCode(0xD83D, 0xDE01)]);
+					//bot.push(['U6350b7606935db981705282747c82ee1', 'U6350b7606935db981705282747c82ee1'], ['Hey!', 'สวัสดี ' + String.fromCharCode(0xD83D, 0xDE01)]);
 					break;
 				case 'Multicast':
-					bot.push(['U6350b7606935db981705282747c82ee1', 'U6350b7606935db981705282747c82ee1'], 'Multicast!');
-					break;
-				case 'Confirm':
-					event.reply({
-						type: 'template',
-						altText: 'this is a carousel template',
-						template: {
-							type: 'carousel',
-							columns: [{
-								thumbnailImageUrl: 'https://example.com/bot/images/item1.jpg',
-								title: 'this is menu',
-								text: 'description',
-								actions: [{
-									type: 'postback',
-									label: 'Buy',
-									data: 'action=buy&itemid=111'
-								}, {
-									type: 'postback',
-									label: 'Add to cart',
-									data: 'action=add&itemid=111'
-								}, {
-									type: 'uri',
-									label: 'View detail',
-									uri: 'http://example.com/page/111'
-								}]
-							}, {
-								thumbnailImageUrl: 'https://example.com/bot/images/item2.jpg',
-								title: 'this is menu',
-								text: 'description',
-								actions: [{
-									type: 'postback',
-									label: 'Buy',
-									data: 'action=buy&itemid=222'
-								}, {
-									type: 'postback',
-									label: 'Add to cart',
-									data: 'action=add&itemid=222'
-								}, {
-									type: 'uri',
-									label: 'View detail',
-									uri: 'http://example.com/page/222'
-								}]
-							}]
-						}
-					});
-					break;
-				case 'Multiple':
-					var ob = {
-						type: 'template',
-						altText: 'this is a carousel template',
-						template: {
-							type: 'carousel',
-							columns: [{
-								thumbnailImageUrl: 'https://example.com/bot/images/item1.jpg',
-								title: 'this is menu',
-								text: 'description',
-								actions: [{
-									type: 'postback',
-									label: 'Buy',
-									data: 'action=buy&itemid=111'
-								}, {
-									type: 'postback',
-									label: 'Add to cart',
-									data: 'action=add&itemid=111'
-								}, {
-									type: 'uri',
-									label: 'View detail',
-									uri: 'http://example.com/page/111'
-								}]
-							}, {
-								thumbnailImageUrl: 'https://example.com/bot/images/item2.jpg',
-								title: 'this is menu',
-								text: 'description',
-								actions: [{
-									type: 'postback',
-									label: 'Buy',
-									data: 'action=buy&itemid=222'
-								}, {
-									type: 'postback',
-									label: 'Add to cart',
-									data: 'action=add&itemid=222'
-								}, {
-									type: 'uri',
-									label: 'View detail',
-									uri: 'http://example.com/page/222'
-								}]
-							}]
-						}
-					};
-					return event.reply([ob]);
+					//bot.push(['U6350b7606935db981705282747c82ee1', 'U6350b7606935db981705282747c82ee1'], 'Multicast!');
 					break;
 				case 'Version':
 					event.reply('linebot@' + require('../package.json').version);
@@ -197,19 +96,17 @@ bot.on('message', function (event) {
 				console.log('https://4f372a0b.ngrok.io/upload/' + url + '.jpg');
 				var face = await (0, _faceAPI2.default)('https://4f372a0b.ngrok.io/upload/' + url + '.jpg');
 				var clothes = await (0, _emotibot2.default)('upload/' + url + '.jpg');
-				console.log(face);
 				if (face.people == 1) {
 					if (clothes.return == 0) {
-						clothes.data.forEach(function (clothesType) {
+						clothes.data.forEach(async function (clothesType) {
 							(0, _yahooAPI2.default)(clothesType, face.gender).then(async function (items) {
 								console.log(clothesType);
-
 								var mes = await itemCard2(event, items);
 								console.log(mes);
 								bot.push(event.source.userId, mes);
 							});
 						});
-						event.reply('');
+						event.reply('商品推送完畢');
 					} else {
 						event.reply('請重新上傳更清楚的照片');
 					}
@@ -232,27 +129,17 @@ bot.on('message', function (event) {
 	}
 });
 
-bot.on('follow', function (event) {
-	event.reply('follow: ' + event.source.userId);
-});
+bot.on('follow', function (event) {});
 
-bot.on('unfollow', function (event) {
-	event.reply('unfollow: ' + event.source.userId);
-});
+bot.on('unfollow', function (event) {});
 
-bot.on('join', function (event) {
-	event.reply('join: ' + event.source.groupId);
-});
+bot.on('join', function (event) {});
 
-bot.on('leave', function (event) {
-	event.reply('leave: ' + event.source.groupId);
-});
+bot.on('leave', function (event) {});
 
 bot.on('postback', function (event) {});
 
-bot.on('beacon', function (event) {
-	event.reply('beacon: ' + event.beacon.hwid);
-});
+bot.on('beacon', function (event) {});
 
 app.post('/linewebhook', linebotParser);
 app.listen(3000);
@@ -260,32 +147,37 @@ app.listen(3000);
 var itemCard2 = async function itemCard2(event, items) {
 	var columnsData = [];
 	var confirmData = [];
+	var arr = getRandomArray(0, 49, 5);
+	var i = 0;
 	items.forEach(function (item) {
-		var image = item.imageUrl || '';
-		var title1 = item.title.substring(0, 20);
-		var price = '\u5546\u54C1\u50F9\u683C\uFF1A' + item.price + '\u5143\n\t\t\t\t\t\t\t\t \u8A55\u50F9\uFF1A' + item.seller.rating;
-		var data1 = item.imageUrl;
-		var data2 = item.url;
-		var label1 = '\u8CE3\u5BB6\u8CC7\u8A0A\uFF1A' + item.seller.title + '(' + item.seller.rating + ')';
-		var data3 = item.seller.url;
-		columnsData.push({
-			thumbnailImageUrl: image,
-			title: title1,
-			text: price,
-			actions: [{
-				type: 'uri',
-				label: '查看圖片',
-				uri: data1
-			}, {
-				type: 'uri',
-				label: '購買網頁',
-				uri: data2
-			}, {
-				type: 'uri',
-				label: '賣家資訊',
-				uri: data3
-			}]
-		});
+		if (arr.indexOf(i) > -1) {
+			var image = item.imageUrl || '';
+			var title1 = item.title.substring(0, 20);
+			var price = '\u5546\u54C1\u50F9\u683C\uFF1A' + item.price + '\u5143\n\t\t\t\t\t\t\t\t \u8A55\u50F9\uFF1A' + item.seller.rating;
+			var data1 = item.imageUrl;
+			var data2 = item.url;
+			var label1 = '\u8CE3\u5BB6\u8CC7\u8A0A\uFF1A' + item.seller.title + '(' + item.seller.rating + ')';
+			var data3 = item.seller.url;
+			columnsData.push({
+				thumbnailImageUrl: image,
+				title: title1,
+				text: price,
+				actions: [{
+					type: 'uri',
+					label: '查看圖片',
+					uri: data1
+				}, {
+					type: 'uri',
+					label: '購買網頁',
+					uri: data2
+				}, {
+					type: 'uri',
+					label: '賣家資訊',
+					uri: data3
+				}]
+			});
+		}
+		i += 1;
 	});
 
 	return {
@@ -297,3 +189,28 @@ var itemCard2 = async function itemCard2(event, items) {
 		}
 	};
 };
+
+function getRandom(minNum, maxNum) {
+	//取得 minNum(最小值) ~ maxNum(最大值) 之間的亂數
+	return Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+}
+
+function getRandomArray(minNum, maxNum, n) {
+	//隨機產生不重覆的n個數字
+	var rdmArray = [n]; //儲存產生的陣列
+
+	for (var i = 0; i < n; i++) {
+		var rdm = 0; //暫存的亂數
+
+		do {
+			var exist = false; //此亂數是否已存在
+			rdm = getRandom(minNum, maxNum); //取得亂數
+
+			//檢查亂數是否存在於陣列中，若存在則繼續回圈
+			if (rdmArray.indexOf(rdm) != -1) exist = true;
+		} while (exist); //產生沒出現過的亂數時離開迴圈
+
+		rdmArray[i] = rdm;
+	}
+	return rdmArray;
+}

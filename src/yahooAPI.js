@@ -23,7 +23,7 @@ const searchItems = async (q, category = '') => {
 	let searchQ ='q=' + urlencode(q);
 
 	
-	return fetch(`https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&limit=5&sort=rel&q=${searchQ}&${bidCategoryId}&${bidCategoryLevel}`, {
+	return fetch(`https://tw.search.ec.yahoo.com:443/api/affiliate/v1/search/items?property=bid&limit=50&sort=rel&q=${searchQ}&${bidCategoryId}&${bidCategoryLevel}`, {
 		method: 'get'
 	})
 	.then((res) => {
