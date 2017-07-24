@@ -11,9 +11,9 @@ const app = express();
 app.use('/upload', express.static('upload'));
 
 const bot = linebot({
-	channelId: 1483028111,
-	channelSecret: 'db1a928288ba09c31f6c4660aafb81fa',
-	channelAccessToken: '0WOs0qRcuUwRkuyiHdyF64/xMXztUDv+3Oi+i4KFucUtMa47kEf/+s3WiBoj5CfaBzlEeWvBZ3jARKyRPG2qB8Bv0QCoSl7XsxV1r3VASpl68Oe4vbii2pbBxjsYt78HyXCQn+gtncKIpkCEvkqzFQdB04t89/1O/w1cDnyilFU=',
+	channelId: '',
+	channelSecret: '',
+	channelAccessToken: '',
 	verify: true // default=true
 });
 const linebotParser = bot.parser();
